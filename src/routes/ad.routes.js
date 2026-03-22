@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const { uploadAd, getAd } = require('../controllers/ad.controller');
+const { uploadAd, getAd, getAds, updateAd, deleteAd } = require('../controllers/ad.controller');
 const { protect } = require('../middleware/auth');
 const { MAX_UPLOAD_SIZE_BYTES } = require('../utils/constants');
 
@@ -24,7 +24,10 @@ const upload = multer({
 });
 
 router.use(protect);
+router.get('/', getAds);
 router.post('/upload', upload.single('image'), uploadAd);
 router.get('/:id', getAd);
+router.put('/:id', updateAd);
+router.delete('/:id', deleteAd);
 
 module.exports = router;

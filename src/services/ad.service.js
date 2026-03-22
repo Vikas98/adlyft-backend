@@ -48,4 +48,34 @@ const getAd = async ({ adId, userId }) => {
   return ad;
 };
 
-module.exports = { uploadAd, getAd };
+const getAds = async ({ userId }) => {
+  logger.debug('Fetching ads for user', { userId });
+  const ads = await Ad.find({ advertiserId: userId }).sort({ createdAt: -1 });
+  return { data: ads, total: ads.length };
+};
+
+const updateAd = async ({ adId, userId, body }) => {
+  logger.info('Updating ad', { adId, userId });
+  const ad = await Ad.findOneAndUpdate(
+    { _id: adId, advertiserId: userId },
+    body,
+    { new: true, runValidators: true }
+  );
+  if (!ad) {
+    logger.warn('Ad not found for update', { adId, userId });
+    throw new AppError('Ad not found', 404);
+  }
+  return ad;
+};
+
+const deleteAd = async ({ adId, userId }) => {
+  logger.info('Deleting ad', { adId, userId });
+  const ad = await Ad.findOneAndDelete({ _id: adId, advertiserId: userId });
+  if (!ad) {
+    logger.warn('Ad not found for deletion', { adId, userId });
+    throw new AppError('Ad not found', 404);
+  }
+  return ad;
+};
+
+module.exports = { uploadAd, getAd, getAds, updateAd, deleteAd };
