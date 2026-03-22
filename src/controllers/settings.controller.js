@@ -1,48 +1,37 @@
 const settingsService = require('../services/settings.service');
 const createLogger = require('../utils/logger');
+const asyncHandler = require('../utils/asyncHandler');
 
 const logger = createLogger('SettingsController');
 
-const getProfile = (req, res) => {
+const getProfile = asyncHandler((req, res) => {
   logger.info(`${req.method} ${req.originalUrl}`, { userId: req.user._id });
   const data = settingsService.getProfile(req.user);
   res.json({ success: true, data });
-};
+});
 
-const updateProfile = async (req, res, next) => {
-  try {
-    logger.info(`${req.method} ${req.originalUrl}`, { userId: req.user._id });
-    const user = await settingsService.updateProfile({ userId: req.user._id, body: req.body });
-    res.json({ success: true, data: user });
-  } catch (error) {
-    next(error);
-  }
-};
+const updateProfile = asyncHandler(async (req, res) => {
+  logger.info(`${req.method} ${req.originalUrl}`, { userId: req.user._id });
+  const user = await settingsService.updateProfile({ userId: req.user._id, body: req.body });
+  res.json({ success: true, data: user });
+});
 
-const updateNotifications = async (req, res, next) => {
-  try {
-    logger.info(`${req.method} ${req.originalUrl}`, { userId: req.user._id });
-    const data = await settingsService.updateNotifications({ userId: req.user._id, body: req.body });
-    res.json({ success: true, data });
-  } catch (error) {
-    next(error);
-  }
-};
+const updateNotifications = asyncHandler(async (req, res) => {
+  logger.info(`${req.method} ${req.originalUrl}`, { userId: req.user._id });
+  const data = await settingsService.updateNotifications({ userId: req.user._id, body: req.body });
+  res.json({ success: true, data });
+});
 
-const getApiKey = (req, res) => {
+const getApiKey = asyncHandler((req, res) => {
   logger.info(`${req.method} ${req.originalUrl}`, { userId: req.user._id });
   const data = settingsService.getApiKey(req.user);
   res.json({ success: true, data });
-};
+});
 
-const regenerateApiKey = async (req, res, next) => {
-  try {
-    logger.info(`${req.method} ${req.originalUrl}`, { userId: req.user._id });
-    const data = await settingsService.regenerateApiKey(req.user._id);
-    res.json({ success: true, data });
-  } catch (error) {
-    next(error);
-  }
-};
+const regenerateApiKey = asyncHandler(async (req, res) => {
+  logger.info(`${req.method} ${req.originalUrl}`, { userId: req.user._id });
+  const data = await settingsService.regenerateApiKey(req.user._id);
+  res.json({ success: true, data });
+});
 
 module.exports = { getProfile, updateProfile, updateNotifications, getApiKey, regenerateApiKey };

@@ -1,5 +1,6 @@
 const Publisher = require('../models/Publisher');
 const AdSlot = require('../models/AdSlot');
+const AppError = require('../utils/AppError');
 const createLogger = require('../utils/logger');
 
 const logger = createLogger('PublisherService');
@@ -34,9 +35,7 @@ const getPublisher = async (publisherId) => {
   const publisher = await Publisher.findById(publisherId);
   if (!publisher) {
     logger.warn('Publisher not found', { publisherId });
-    const err = new Error('Publisher not found');
-    err.statusCode = 404;
-    throw err;
+    throw new AppError('Publisher not found', 404);
   }
   const slots = await AdSlot.find({ publisherId });
   logger.debug('Publisher fetched with slots', { publisherId, slots: slots.length });

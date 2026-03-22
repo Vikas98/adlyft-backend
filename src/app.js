@@ -3,6 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const errorHandler = require('./middleware/errorHandler');
 const { apiLimiter, authLimiter, servingLimiter } = require('./middleware/rateLimiter');
+const createLogger = require('./utils/logger');
 
 const authRoutes = require('./routes/auth.routes');
 const campaignRoutes = require('./routes/campaign.routes');
@@ -15,6 +16,7 @@ const billingRoutes = require('./routes/billing.routes');
 const settingsRoutes = require('./routes/settings.routes');
 const publisherSlotRoutes = require('./routes/publisherSlot.routes');
 
+const logger = createLogger('App');
 const app = express();
 
 app.use(cors({
@@ -25,6 +27,16 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+
+// Request logging middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    logger.info(`${req.method} ${req.originalUrl} ${res.statusCode} ${duration}ms`);
+  });
+  next();
+});
 
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/campaigns', apiLimiter, campaignRoutes);
@@ -39,6 +51,14 @@ app.use('/api/publisher', apiLimiter, publisherSlotRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ success: true, message: 'Adlyft API is running', timestamp: new Date().toISOString() });
+});
+
+// 404 handler for unknown routes
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Route not found: ${req.method} ${req.path}`,
+  });
 });
 
 app.use(errorHandler);

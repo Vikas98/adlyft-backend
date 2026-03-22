@@ -1,5 +1,6 @@
 const Invoice = require('../models/Invoice');
 const Campaign = require('../models/Campaign');
+const AppError = require('../utils/AppError');
 const createLogger = require('../utils/logger');
 
 const logger = createLogger('BillingService');
@@ -46,9 +47,7 @@ const getInvoice = async ({ invoiceId, userId }) => {
   const invoice = await Invoice.findOne({ _id: invoiceId, advertiserId: userId });
   if (!invoice) {
     logger.warn('Invoice not found', { invoiceId, userId });
-    const err = new Error('Invoice not found');
-    err.statusCode = 404;
-    throw err;
+    throw new AppError('Invoice not found', 404);
   }
   return invoice;
 };

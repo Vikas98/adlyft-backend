@@ -1,5 +1,6 @@
 const Ad = require('../models/Ad');
 const Activity = require('../models/Activity');
+const AppError = require('../utils/AppError');
 const path = require('path');
 const createLogger = require('../utils/logger');
 
@@ -8,9 +9,7 @@ const logger = createLogger('AdService');
 const uploadAd = async ({ file, body, userId }) => {
   logger.info('Uploading new ad creative', { userId });
   if (!file) {
-    const err = new Error('No image file uploaded');
-    err.statusCode = 400;
-    throw err;
+    throw new AppError('No image file uploaded', 400);
   }
 
   const { campaignId, clickUrl, altText, size } = body;
@@ -44,9 +43,7 @@ const getAd = async ({ adId, userId }) => {
   const ad = await Ad.findOne({ _id: adId, advertiserId: userId });
   if (!ad) {
     logger.warn('Ad not found', { adId, userId });
-    const err = new Error('Ad not found');
-    err.statusCode = 404;
-    throw err;
+    throw new AppError('Ad not found', 404);
   }
   return ad;
 };
