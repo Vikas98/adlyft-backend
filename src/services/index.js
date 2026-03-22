@@ -5,6 +5,7 @@ const analyticsService = require('./analytics.service');
 const billingService = require('./billing.service');
 const campaignService = require('./campaign.service');
 const invoiceService = require('./invoice.service');
+const notificationService = require('./notification.service');
 const publisherService = require('./publisher.service');
 const servingService = require('./serving.service');
 const settingsService = require('./settings.service');
@@ -18,6 +19,7 @@ module.exports = {
   billingService,
   campaignService,
   invoiceService,
+  notificationService,
   publisherService,
   servingService,
   settingsService,
