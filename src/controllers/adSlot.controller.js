@@ -23,4 +23,23 @@ const registerSlot = asyncHandler(async (req, res) => {
   res.status(201).json({ success: true, data: slot });
 });
 
-module.exports = { getSlots, getSlot, registerSlot };
+const createSlot = asyncHandler(async (req, res) => {
+  logger.info(`${req.method} ${req.originalUrl}`);
+  const slot = await adSlotService.createSlot(req.body);
+  logger.info('Responding 201 — slot created', { slotId: slot.slotId });
+  res.status(201).json({ success: true, data: slot });
+});
+
+const updateSlot = asyncHandler(async (req, res) => {
+  logger.info(`${req.method} ${req.originalUrl}`, { slotId: req.params.id });
+  const slot = await adSlotService.updateSlot(req.params.id, req.body);
+  res.json({ success: true, data: slot });
+});
+
+const deleteSlot = asyncHandler(async (req, res) => {
+  logger.info(`${req.method} ${req.originalUrl}`, { slotId: req.params.id });
+  await adSlotService.deleteSlot(req.params.id);
+  res.json({ success: true, message: 'Ad slot deleted' });
+});
+
+module.exports = { getSlots, getSlot, registerSlot, createSlot, updateSlot, deleteSlot };

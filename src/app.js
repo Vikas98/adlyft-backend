@@ -15,6 +15,8 @@ const analyticsRoutes = require('./routes/analytics.routes');
 const billingRoutes = require('./routes/billing.routes');
 const settingsRoutes = require('./routes/settings.routes');
 const publisherSlotRoutes = require('./routes/publisherSlot.routes');
+const invoiceRoutes = require('./routes/invoice.routes');
+const userRoutes = require('./routes/user.routes');
 
 const logger = createLogger('App');
 const app = express();
@@ -48,6 +50,8 @@ app.use('/api/analytics', apiLimiter, analyticsRoutes);
 app.use('/api/billing', apiLimiter, billingRoutes);
 app.use('/api/settings', apiLimiter, settingsRoutes);
 app.use('/api/publisher', apiLimiter, publisherSlotRoutes);
+app.use('/api/invoices', apiLimiter, invoiceRoutes);
+app.use('/api/users', apiLimiter, userRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ success: true, message: 'Adlyft API is running', timestamp: new Date().toISOString() });
