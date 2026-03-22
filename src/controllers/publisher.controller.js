@@ -1,4 +1,5 @@
 const publisherService = require('../services/publisher.service');
+const Publisher = require('../models/Publisher');
 const createLogger = require('../utils/logger');
 const asyncHandler = require('../utils/asyncHandler');
 

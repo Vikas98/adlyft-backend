@@ -44,7 +44,8 @@ const getCampaign = async ({ campaignId, userId }) => {
 
 const createCampaign = async ({ body, userId }) => {
   logger.info('Creating campaign', { userId, name: body.name });
-  const { name, objective, publisherId, slotId, adId, startDate, endDate, dailyBudget, totalBudget } = body;
+  const { name, objective, publisherId, slotId, adId, startDate, endDate, dailyBudget } = body;
+  const totalBudget = body.totalBudget ?? body.budget;
   const campaign = await Campaign.create({
     advertiserId: userId,
     name, objective, publisherId, slotId, adId, startDate, endDate,
