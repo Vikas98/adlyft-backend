@@ -66,4 +66,33 @@ const registerSlot = async ({ apiKey, body }) => {
   return slot;
 };
 
-module.exports = { getSlots, getSlot, registerSlot };
+const createSlot = async (body) => {
+  const { publisherId, name, screen, size, type, pricePerMonth, cpm, status } = body;
+  const slotId = `SLOT-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+  logger.info('Creating ad slot', { publisherId, name });
+  const slot = await AdSlot.create({ publisherId, slotId, name, screen, size, type, pricePerMonth, cpm, status });
+  logger.info('Ad slot created', { slotId: slot.slotId });
+  return slot;
+};
+
+const updateSlot = async (id, body) => {
+  logger.info('Updating ad slot', { id });
+  const slot = await AdSlot.findByIdAndUpdate(id, body, { new: true, runValidators: true });
+  if (!slot) {
+    logger.warn('Ad slot not found for update', { id });
+    throw new AppError('AdSlot not found', 404);
+  }
+  return slot;
+};
+
+const deleteSlot = async (id) => {
+  logger.info('Deleting ad slot', { id });
+  const slot = await AdSlot.findByIdAndDelete(id);
+  if (!slot) {
+    logger.warn('Ad slot not found for deletion', { id });
+    throw new AppError('AdSlot not found', 404);
+  }
+  return slot;
+};
+
+module.exports = { getSlots, getSlot, registerSlot, createSlot, updateSlot, deleteSlot };

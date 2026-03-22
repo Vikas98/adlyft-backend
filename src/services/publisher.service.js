@@ -42,4 +42,36 @@ const getPublisher = async (publisherId) => {
   return { ...publisher.toObject(), slots };
 };
 
-module.exports = { getPublishers, getPublisher };
+const createPublisher = async (body) => {
+  const { name, appName, category, description, website, dau, platform, avgCTR, status, contactEmail } = body;
+  const apiKey = require('crypto').randomBytes(32).toString('hex');
+  logger.info('Creating publisher', { name, appName });
+  const publisher = await Publisher.create({ name, appName, category, description, website, dau, platform, avgCTR, status, contactEmail, apiKey });
+  logger.info('Publisher created', { publisherId: publisher._id });
+  return publisher;
+};
+
+const updatePublisher = async (publisherId, body) => {
+  logger.info('Updating publisher', { publisherId });
+  const publisher = await Publisher.findByIdAndUpdate(publisherId, body, { new: true, runValidators: true });
+  if (!publisher) {
+    logger.warn('Publisher not found for update', { publisherId });
+    throw new AppError('Publisher not found', 404);
+  }
+  return publisher;
+};
+
+const deletePublisher = async (publisherId) => {
+  logger.info('Deleting publisher', { publisherId });
+  // Delete related slots first to avoid orphaned records
+  await AdSlot.deleteMany({ publisherId });
+  const publisher = await Publisher.findByIdAndDelete(publisherId);
+  if (!publisher) {
+    logger.warn('Publisher not found for deletion', { publisherId });
+    throw new AppError('Publisher not found', 404);
+  }
+  logger.info('Publisher and related slots deleted', { publisherId });
+  return publisher;
+};
+
+module.exports = { getPublishers, getPublisher, createPublisher, updatePublisher, deletePublisher };
