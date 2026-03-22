@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const campaignSchema = new mongoose.Schema({
   advertiserId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   name: { type: String, required: true },
-  objective: { type: String, enum: ['brand_awareness', 'traffic', 'conversions'], required: true },
+  objective: { type: String, enum: ['brand_awareness', 'awareness', 'traffic', 'conversions', 'installs'], required: true },
   publisherId: { type: mongoose.Schema.Types.ObjectId, ref: 'Publisher' },
   slotId: { type: mongoose.Schema.Types.ObjectId, ref: 'AdSlot' },
   adId: { type: mongoose.Schema.Types.ObjectId, ref: 'Ad' },

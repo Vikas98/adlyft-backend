@@ -103,10 +103,12 @@ const getPublisherAnalytics = async (userId) => {
   });
 
   impressionsByPublisher.forEach(i => {
+    if (!i._id) return;
     const id = i._id.toString();
     if (publisherMap[id]) publisherMap[id].impressions = i.impressions;
   });
   clicksByPublisher.forEach(c => {
+    if (!c._id) return;
     const id = c._id.toString();
     if (publisherMap[id]) publisherMap[id].clicks = c.clicks;
   });

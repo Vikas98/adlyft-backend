@@ -24,7 +24,7 @@ const upload = multer({
 });
 
 router.use(protect);
-router.post('/upload', upload.single('image'), uploadAd);
+router.post('/upload', upload.fields([{ name: 'file', maxCount: 1 }, { name: 'image', maxCount: 1 }]), uploadAd);
 router.get('/:id', getAd);
 
 module.exports = router;
