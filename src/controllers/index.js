@@ -1,5 +1,6 @@
 const authController = require('./auth.controller');
 const campaignController = require('./campaign.controller');
+const notificationController = require('./notification.controller');
 const publisherController = require('./publisher.controller');
 const adSlotController = require('./adSlot.controller');
 const adController = require('./ad.controller');
@@ -13,6 +14,7 @@ const userController = require('./user.controller');
 module.exports = {
   authController,
   campaignController,
+  notificationController,
   publisherController,
   adSlotController,
   adController,

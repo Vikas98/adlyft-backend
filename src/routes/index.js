@@ -1,5 +1,6 @@
 const authRoutes = require('./auth.routes');
 const campaignRoutes = require('./campaign.routes');
+const notificationRoutes = require('./notification.routes');
 const publisherRoutes = require('./publisher.routes');
 const adSlotRoutes = require('./adSlot.routes');
 const adRoutes = require('./ad.routes');
@@ -14,6 +15,7 @@ const userRoutes = require('./user.routes');
 module.exports = {
   authRoutes,
   campaignRoutes,
+  notificationRoutes,
   publisherRoutes,
   adSlotRoutes,
   adRoutes,

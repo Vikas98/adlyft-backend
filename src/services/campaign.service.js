@@ -2,6 +2,7 @@ const Campaign = require('../models/Campaign');
 const Activity = require('../models/Activity');
 const AppError = require('../utils/AppError');
 const createLogger = require('../utils/logger');
+const notificationService = require('./notification.service');
 
 const logger = createLogger('CampaignService');
 
@@ -61,6 +62,14 @@ const createCampaign = async ({ body, userId }) => {
     metadata: { campaignId: campaign._id },
   });
 
+  await notificationService.createNotification({
+    userId,
+    type: 'campaign_created',
+    title: 'Campaign Created',
+    message: `Your campaign "${name}" has been created successfully.`,
+    metadata: { campaignId: campaign._id },
+  });
+
   logger.info('Campaign created successfully', { campaignId: campaign._id, userId });
   return campaign;
 };
@@ -109,6 +118,25 @@ const updateCampaignStatus = async ({ campaignId, userId, status }) => {
     userId,
     type: activityType,
     message: `Campaign "${campaign.name}" status changed to ${status}`,
+    metadata: { campaignId: campaign._id, status },
+  });
+
+  let notificationTitle = 'Campaign Updated';
+  let notificationType = activityType;
+  if (status === 'active') {
+    notificationTitle = 'Campaign Launched';
+  } else if (status === 'paused') {
+    notificationTitle = 'Campaign Paused';
+  } else if (status === 'completed') {
+    notificationType = 'campaign_completed';
+    notificationTitle = 'Campaign Completed';
+  }
+
+  await notificationService.createNotification({
+    userId,
+    type: notificationType,
+    title: notificationTitle,
+    message: `Campaign "${campaign.name}" status changed to ${status}.`,
     metadata: { campaignId: campaign._id, status },
   });
 

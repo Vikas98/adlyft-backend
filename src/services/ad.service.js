@@ -3,6 +3,7 @@ const Activity = require('../models/Activity');
 const AppError = require('../utils/AppError');
 const path = require('path');
 const createLogger = require('../utils/logger');
+const notificationService = require('./notification.service');
 
 const logger = createLogger('AdService');
 
@@ -31,6 +32,14 @@ const uploadAd = async ({ file, body, userId }) => {
     userId,
     type: 'ad_uploaded',
     message: `New ad creative uploaded`,
+    metadata: { adId: ad._id },
+  });
+
+  await notificationService.createNotification({
+    userId,
+    type: 'ad_uploaded',
+    title: 'Ad Uploaded',
+    message: 'Your ad creative has been uploaded and is pending review.',
     metadata: { adId: ad._id },
   });
 

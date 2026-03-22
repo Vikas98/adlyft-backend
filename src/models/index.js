@@ -7,6 +7,7 @@ const Impression = require('./Impression');
 const Click = require('./Click');
 const Invoice = require('./Invoice');
 const Activity = require('./Activity');
+const Notification = require('./Notification');
 
 module.exports = {
   User,
@@ -18,4 +19,5 @@ module.exports = {
   Click,
   Invoice,
   Activity,
+  Notification,
 };
