@@ -3,6 +3,7 @@ const AdSlot = require('../models/AdSlot');
 const Campaign = require('../models/Campaign');
 const Impression = require('../models/Impression');
 const Click = require('../models/Click');
+const AppError = require('../utils/AppError');
 const { getCache, setCache, incrementCounter } = require('../config/redis');
 const createLogger = require('../utils/logger');
 
@@ -11,9 +12,7 @@ const logger = createLogger('ServingService');
 const serveAd = async (slotId) => {
   logger.info('Serving ad for slot', { slotId });
   if (!slotId) {
-    const err = new Error('slot_id is required');
-    err.statusCode = 400;
-    throw err;
+    throw new AppError('slot_id is required', 400);
   }
 
   const cacheKey = `ad:slot:${slotId}`;
@@ -27,17 +26,13 @@ const serveAd = async (slotId) => {
   const slot = await AdSlot.findOne({ slotId });
   if (!slot) {
     logger.warn('Slot not found', { slotId });
-    const err = new Error('Slot not found');
-    err.statusCode = 404;
-    throw err;
+    throw new AppError('Slot not found', 404);
   }
 
   const campaign = await Campaign.findOne({ slotId: slot._id, status: 'active' }).populate('adId');
   if (!campaign || !campaign.adId) {
     logger.warn('No active campaign found for ad serving', { slotId });
-    const err = new Error('No active ad for this slot');
-    err.statusCode = 404;
-    throw err;
+    throw new AppError('No active ad for this slot', 404);
   }
 
   const ad = campaign.adId;
@@ -62,17 +57,13 @@ const trackImpression = async (adId) => {
   const ad = await Ad.findById(adId);
   if (!ad) {
     logger.warn('Ad not found for impression tracking', { adId });
-    const err = new Error('Ad not found');
-    err.statusCode = 404;
-    throw err;
+    throw new AppError('Ad not found', 404);
   }
 
   const campaign = await Campaign.findOne({ adId, status: 'active' });
   if (!campaign) {
     logger.warn('No active campaign for impression tracking', { adId });
-    const err = new Error('No active campaign for this ad');
-    err.statusCode = 404;
-    throw err;
+    throw new AppError('No active campaign for this ad', 404);
   }
 
   await Impression.create({
@@ -92,9 +83,7 @@ const trackClick = async (adId) => {
   const ad = await Ad.findById(adId);
   if (!ad) {
     logger.warn('Ad not found for click tracking', { adId });
-    const err = new Error('Ad not found');
-    err.statusCode = 404;
-    throw err;
+    throw new AppError('Ad not found', 404);
   }
 
   const campaign = await Campaign.findOne({ adId, status: 'active' });

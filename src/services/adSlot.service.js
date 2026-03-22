@@ -1,5 +1,6 @@
 const AdSlot = require('../models/AdSlot');
 const Publisher = require('../models/Publisher');
+const AppError = require('../utils/AppError');
 const { v4: uuidv4 } = require('uuid');
 const createLogger = require('../utils/logger');
 
@@ -30,9 +31,7 @@ const getSlot = async (slotId) => {
   const slot = await AdSlot.findById(slotId).populate('publisherId', 'name appName category');
   if (!slot) {
     logger.warn('Ad slot not found', { slotId });
-    const err = new Error('Ad slot not found');
-    err.statusCode = 404;
-    throw err;
+    throw new AppError('Ad slot not found', 404);
   }
   return slot;
 };
@@ -40,17 +39,13 @@ const getSlot = async (slotId) => {
 const registerSlot = async ({ apiKey, body }) => {
   logger.info('Registering new ad slot');
   if (!apiKey) {
-    const err = new Error('Publisher API key required');
-    err.statusCode = 401;
-    throw err;
+    throw new AppError('Publisher API key required', 401);
   }
 
   const publisher = await Publisher.findOne({ apiKey });
   if (!publisher) {
     logger.warn('Slot registration failed — invalid API key');
-    const err = new Error('Invalid publisher API key');
-    err.statusCode = 401;
-    throw err;
+    throw new AppError('Invalid publisher API key', 401);
   }
 
   const { name, screen, size, type, pricePerMonth, cpm } = body;

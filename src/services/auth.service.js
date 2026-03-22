@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
+const AppError = require('../utils/AppError');
 const { v4: uuidv4 } = require('uuid');
 const createLogger = require('../utils/logger');
 
@@ -10,9 +11,7 @@ const register = async ({ name, email, password, company }) => {
   const existing = await User.findOne({ email });
   if (existing) {
     logger.warn('Registration failed — email already in use', { email });
-    const err = new Error('Email already in use');
-    err.statusCode = 400;
-    throw err;
+    throw new AppError('Email already in use', 400);
   }
 
   const user = await User.create({
@@ -42,9 +41,7 @@ const login = async ({ email, password }) => {
   const user = await User.findOne({ email });
   if (!user || !(await user.matchPassword(password))) {
     logger.warn('Login failed — invalid credentials', { email });
-    const err = new Error('Invalid email or password');
-    err.statusCode = 401;
-    throw err;
+    throw new AppError('Invalid email or password', 401);
   }
 
   const token = generateToken(user._id);

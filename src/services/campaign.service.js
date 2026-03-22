@@ -1,5 +1,6 @@
 const Campaign = require('../models/Campaign');
 const Activity = require('../models/Activity');
+const AppError = require('../utils/AppError');
 const createLogger = require('../utils/logger');
 
 const logger = createLogger('CampaignService');
@@ -36,9 +37,7 @@ const getCampaign = async ({ campaignId, userId }) => {
     .populate('adId');
   if (!campaign) {
     logger.warn('Campaign not found', { campaignId, userId });
-    const err = new Error('Campaign not found');
-    err.statusCode = 404;
-    throw err;
+    throw new AppError('Campaign not found', 404);
   }
   return campaign;
 };
@@ -75,9 +74,7 @@ const updateCampaign = async ({ campaignId, userId, body }) => {
   );
   if (!campaign) {
     logger.warn('Campaign not found for update', { campaignId, userId });
-    const err = new Error('Campaign not found');
-    err.statusCode = 404;
-    throw err;
+    throw new AppError('Campaign not found', 404);
   }
   logger.info('Campaign updated successfully', { campaignId, userId });
   return campaign;
@@ -87,9 +84,7 @@ const updateCampaignStatus = async ({ campaignId, userId, status }) => {
   logger.info('Updating campaign status', { campaignId, userId, status });
   const allowed = ['draft', 'active', 'paused', 'completed'];
   if (!allowed.includes(status)) {
-    const err = new Error('Invalid status');
-    err.statusCode = 400;
-    throw err;
+    throw new AppError('Invalid status', 400);
   }
 
   const campaign = await Campaign.findOneAndUpdate(
@@ -99,9 +94,7 @@ const updateCampaignStatus = async ({ campaignId, userId, status }) => {
   );
   if (!campaign) {
     logger.warn('Campaign not found for status update', { campaignId, userId });
-    const err = new Error('Campaign not found');
-    err.statusCode = 404;
-    throw err;
+    throw new AppError('Campaign not found', 404);
   }
 
   let activityType = 'campaign_created';
@@ -127,15 +120,11 @@ const deleteCampaign = async ({ campaignId, userId }) => {
   const campaign = await Campaign.findOne({ _id: campaignId, advertiserId: userId });
   if (!campaign) {
     logger.warn('Campaign not found for deletion', { campaignId, userId });
-    const err = new Error('Campaign not found');
-    err.statusCode = 404;
-    throw err;
+    throw new AppError('Campaign not found', 404);
   }
   if (campaign.status !== 'draft') {
     logger.warn('Attempt to delete non-draft campaign', { campaignId, status: campaign.status });
-    const err = new Error('Only draft campaigns can be deleted');
-    err.statusCode = 400;
-    throw err;
+    throw new AppError('Only draft campaigns can be deleted', 400);
   }
   await campaign.deleteOne();
   logger.info('Campaign deleted', { campaignId, userId });
