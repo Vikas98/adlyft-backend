@@ -92,7 +92,7 @@ const getMe = asyncHandler(async (req, res) => {
 const updateMe = asyncHandler(async (req, res) => {
   const { name, companyName, website, websiteCategory, phone, avatar } = req.body;
   const update = {};
-  if (name) update.name = name;
+  if (name !== undefined) update.name = name;
   if (companyName !== undefined) update.companyName = companyName;
   if (website !== undefined) update.website = website;
   if (websiteCategory !== undefined) update.websiteCategory = websiteCategory;

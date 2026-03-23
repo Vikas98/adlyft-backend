@@ -179,9 +179,9 @@ const seed = async () => {
   ]);
 
   console.log('\n=== Seed Complete ===');
-  console.log('Admin:       admin@adlyft.com / Admin@123');
-  console.log('Publisher 1: publisher1@adlyft.com / Publisher@123');
-  console.log('Publisher 2: publisher2@adlyft.com / Publisher@123');
+  console.log('Admin:        admin@adlyft.com / Admin@123');
+  console.log('Publisher 1:  publisher1@adlyft.com / Publisher@123');
+  console.log('Publisher 2:  publisher2@adlyft.com / Publisher@123');
   console.log('Advertiser 1: advertiser1@adlyft.com / Advertiser@123');
   console.log('Advertiser 2: advertiser2@adlyft.com / Advertiser@123');
 
