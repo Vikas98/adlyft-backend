@@ -13,7 +13,9 @@ const getAdvertiser = asyncHandler(async (req, res, next) => {
   const advertiser = await User.findOne({ _id: req.params.id, role: 'advertiser' }).select('-password');
   if (!advertiser) return next(new AppError('Advertiser not found', 404));
   const campaigns = await Campaign.find({ advertiser: advertiser._id });
-  const ads = await Ad.find({ advertiser: advertiser._id }).populate('campaign adSlot');
+  const ads = await Ad.find({ advertiser: advertiser._id })
+    .populate('campaign', 'name budget status')
+    .populate('adSlot', 'name size pricingModel');
   res.json({ success: true, data: { advertiser, campaigns, ads } });
 });
 
