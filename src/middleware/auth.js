@@ -3,7 +3,8 @@ const User = require('../models/User');
 const { JWT_SECRET } = require('../config/env');
 const AppError = require('../utils/AppError');
 
-const protect = async (req, res, next) => {
+// Verify JWT and attach user to req.user
+const authenticate = async (req, res, next) => {
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
@@ -19,16 +20,30 @@ const protect = async (req, res, next) => {
     }
     next();
   } catch (error) {
-    // JsonWebTokenError and TokenExpiredError are handled by the global error handler
     next(error);
   }
 };
 
-const adminOnly = (req, res, next) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ success: false, message: 'Admin access required' });
+// Check user role
+const requireRole = (...roles) => (req, res, next) => {
+  if (!roles.includes(req.user.role)) {
+    return next(new AppError('Access denied: insufficient role', 403));
   }
   next();
 };
 
-module.exports = { protect, adminOnly };
+// Check publisher is approved
+const requireApproved = (req, res, next) => {
+  if (req.user.status !== 'approved') {
+    return next(new AppError('Your account is pending approval by admin', 403));
+  }
+  next();
+};
+
+// Keep protect as alias for authenticate for backward compat
+const protect = authenticate;
+
+// Keep adminOnly for backward compat
+const adminOnly = requireRole('admin');
+
+module.exports = { authenticate, requireRole, requireApproved, protect, adminOnly };

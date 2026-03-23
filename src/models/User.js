@@ -5,15 +5,16 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true, lowercase: true },
   password: { type: String, required: true },
-  company: { type: String, default: '' },
+  role: { type: String, enum: ['admin', 'publisher', 'advertiser'], required: true, default: 'advertiser' },
+  status: { type: String, enum: ['pending', 'approved', 'rejected', 'blocked'], default: 'approved' },
+  // Advertiser fields
+  companyName: { type: String, default: '' },
+  // Publisher fields
+  website: { type: String, default: '' },
+  websiteCategory: { type: String, default: '' },
+  // Common
   phone: { type: String, default: '' },
-  address: { type: String, default: '' },
-  role: { type: String, enum: ['advertiser', 'admin'], default: 'advertiser' },
-  apiKey: { type: String, unique: true },
-  notificationPrefs: {
-    emailAlerts: { type: Boolean, default: true },
-    weeklyReports: { type: Boolean, default: true },
-  },
+  avatar: { type: String, default: '' },
 }, { timestamps: true });
 
 userSchema.pre('save', async function (next) {
